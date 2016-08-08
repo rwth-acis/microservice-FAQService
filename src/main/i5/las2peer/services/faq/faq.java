@@ -103,7 +103,6 @@ public class faq extends Service {
   @ApiResponses(value = {
        @ApiResponse(code = HttpURLConnection.HTTP_OK, message = "listAll")
   })
-  
   @ApiOperation(value = "listAll", notes = "")
   public HttpResponse listAll() {
     // listAll
@@ -159,7 +158,6 @@ public class faq extends Service {
   @ApiResponses(value = {
        @ApiResponse(code = HttpURLConnection.HTTP_CREATED, message = "entryCreated")
   })
-  
   @ApiOperation(value = "createEntry", notes = "")
   public HttpResponse createEntry(@ContentParam String entry) {
     JSONObject entry_JSON = (JSONObject) JSONValue.parse(entry);
@@ -185,7 +183,44 @@ public class faq extends Service {
     return null;
   }
 
-
+  /**
+   * deleteEntry
+   * Delete a FAQ entry.
+   * 
+   * @param a JSONObject containing the id of the entry to be deleted
+   * 
+   */
+  @DELETE
+  @Path("/delete")
+  @Produces(MediaType.APPLICATION_JSON)
+  @Consumes(MediaType.APPLICATION_JSON)
+  @ApiResponses(value = {
+		  @ApiResponse(code = HttpURLConnection.HTTP_CREATED, message = "entryCreated")
+  })
+  @ApiOperation(value = "deleteEntry", notes = "")
+  public HttpResponse deleteEntry(@ContentParam String entry) {
+	  JSONObject entry_JSON = (JSONObject) JSONValue.parse(entry);
+	  boolean entryDeleted_condition = true;
+	  //entryDeleted
+	  try {
+		  String deleteSQL = "DELETE FROM entry WHERE entry.id=?";
+		  PreparedStatement preparedStatement = dbm.getConnection().prepareStatement(deleteSQL);
+		  preparedStatement.setString(1, entry_JSON.get("id").toString());
+		  preparedStatement.executeUpdate();
+	  } catch(SQLException e) {
+		e.printStackTrace();
+		entryDeleted_condition = false;
+	  }
+	  
+	  if(entryDeleted_condition) {
+		  JSONObject result = new JSONObject();
+		  result.put("Result:", "Success, deleted entry with id: "+entry_JSON.get("id").toString());
+		  HttpResponse entryDeleted = new HttpResponse(result.toJSONString(),HttpURLConnection.HTTP_CREATED);
+		  return entryDeleted;
+	  }
+	  return null;
+  }
+  
   // //////////////////////////////////////////////////////////////////////////////////////
   // Methods required by the LAS2peer framework.
   // //////////////////////////////////////////////////////////////////////////////////////
