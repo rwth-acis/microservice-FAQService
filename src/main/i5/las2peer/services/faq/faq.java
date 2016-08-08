@@ -2,6 +2,7 @@ package i5.las2peer.services.faq;
 
 import java.net.HttpURLConnection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import javax.ws.rs.DELETE;
@@ -33,6 +34,8 @@ import io.swagger.annotations.SwaggerDefinition;
 import io.swagger.jaxrs.Reader;
 import io.swagger.models.Swagger;
 import io.swagger.util.Json;
+
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
@@ -59,6 +62,8 @@ import org.json.simple.JSONValue;
             url = "https://github.com/CAE-Community-Application-Editor/microservice-FAQService/blob/master/LICENSE.txt") ) )
 public class faq extends Service {
 
+	private final static String QUESTION_KEY = "question";
+	private final static String ANSWER_KEY = "answer";
 
   /*
    * Database configuration
@@ -86,7 +91,7 @@ public class faq extends Service {
   /**
    * 
    * listAll
-   * 
+   * Lists all FAQ entries.
    * 
    * @return HttpResponse
    * 
@@ -98,12 +103,38 @@ public class faq extends Service {
   @ApiResponses(value = {
        @ApiResponse(code = HttpURLConnection.HTTP_OK, message = "listAll")
   })
+  
   @ApiOperation(value = "listAll", notes = "")
   public HttpResponse listAll() {
     // listAll
-    boolean listAll_condition = true;
+	boolean listAll_condition = true;
+	ResultSet result;
+	
+	try {
+	String retrieveSQL = "SELECT * FROM faq.entry";
+	PreparedStatement preparedStatement = dbm.getConnection().prepareStatement(retrieveSQL);
+	result = preparedStatement.executeQuery();
+	} catch (SQLException e) {
+		e.printStackTrace();
+		listAll_condition = false;
+		result = null;
+	}
+	  
+    
     if(listAll_condition) {
-      JSONObject entryList = new JSONObject();
+      JSONArray entryList = new JSONArray();
+      try {
+		  while(result.next()){
+			  	JSONObject entry = new JSONObject();
+			  	entry.put("id", result.getObject("ID"));
+				entry.put(QUESTION_KEY,result.getObject(QUESTION_KEY));
+				entry.put(ANSWER_KEY, result.getObject(ANSWER_KEY));
+				entryList.add(entry);
+		  }
+      } catch (SQLException e) {
+			e.printStackTrace();
+	  }
+      
       HttpResponse listAll = new HttpResponse(entryList.toJSONString(), HttpURLConnection.HTTP_OK);
       return listAll;
     }
@@ -114,6 +145,7 @@ public class faq extends Service {
   /**
    * 
    * createEntry
+   * Create a FAQ entry.
    * 
    * @param entry a JSONObject
    * 
@@ -127,6 +159,7 @@ public class faq extends Service {
   @ApiResponses(value = {
        @ApiResponse(code = HttpURLConnection.HTTP_CREATED, message = "entryCreated")
   })
+  
   @ApiOperation(value = "createEntry", notes = "")
   public HttpResponse createEntry(@ContentParam String entry) {
     JSONObject entry_JSON = (JSONObject) JSONValue.parse(entry);
@@ -135,8 +168,8 @@ public class faq extends Service {
     try {
     	String insertSQL = "INSERT INTO faq.entry (answer,question) VALUES (?,?)";
     	PreparedStatement preparedStatement = dbm.getConnection().prepareStatement(insertSQL);
-    	preparedStatement.setString(1,"test");
-    	preparedStatement.setString(2, "testanswer");
+    	preparedStatement.setString(1,entry_JSON.get(QUESTION_KEY).toString());
+    	preparedStatement.setString(2, entry_JSON.get(ANSWER_KEY).toString());
     	preparedStatement.executeUpdate();
 	} catch (SQLException e) {
 		e.printStackTrace();
