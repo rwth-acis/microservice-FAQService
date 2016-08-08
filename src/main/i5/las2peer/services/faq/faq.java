@@ -1,6 +1,8 @@
 package i5.las2peer.services.faq;
 
 import java.net.HttpURLConnection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -128,11 +130,23 @@ public class faq extends Service {
   @ApiOperation(value = "createEntry", notes = "")
   public HttpResponse createEntry(@ContentParam String entry) {
     JSONObject entry_JSON = (JSONObject) JSONValue.parse(entry);
-    // entryCreated
     boolean entryCreated_condition = true;
+    // entryCreated
+    try {
+    	String insertSQL = "INSERT INTO faq.entry (answer,question) VALUES (?,?)";
+    	PreparedStatement preparedStatement = dbm.getConnection().prepareStatement(insertSQL);
+    	preparedStatement.setString(1,"test");
+    	preparedStatement.setString(2, "testanswer");
+    	preparedStatement.executeUpdate();
+	} catch (SQLException e) {
+		e.printStackTrace();
+		entryCreated_condition = false;
+	}
+    
     if(entryCreated_condition) {
-      JSONObject  = new JSONObject();
-      HttpResponse entryCreated = new HttpResponse(.toJSONString(), HttpURLConnection.HTTP_CREATED);
+      JSONObject result = new JSONObject();
+      result.put("Result:", "Sucess");
+      HttpResponse entryCreated = new HttpResponse(result.toJSONString(), HttpURLConnection.HTTP_CREATED);
       return entryCreated;
     }
     return null;
