@@ -7,6 +7,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 
+import javax.crypto.SecretKey;
+import javax.crypto.SecretKeyFactory;
+
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -18,6 +21,7 @@ import i5.las2peer.restMapper.RESTMapper;
 import i5.las2peer.restMapper.data.Pair;
 import i5.las2peer.restMapper.tools.ValidationResult;
 import i5.las2peer.restMapper.tools.XMLCheck;
+import i5.las2peer.security.Agent;
 import i5.las2peer.security.ServiceAgent;
 import i5.las2peer.security.UserAgent;
 import i5.las2peer.testing.MockAgentFactory;
@@ -68,7 +72,9 @@ public class faqTest {
 
     // start node
     node = LocalNode.newNode();
-    node.storeAgent(MockAgentFactory.getAdam());
+    UserAgent userAgent = MockAgentFactory.getAdam();
+    userAgent.unlockPrivateKey(testPass);
+    node.storeAgent(userAgent);
     node.launch();
 
     ServiceAgent testService = ServiceAgent.createServiceAgent(testTemplateService, "a pass");
@@ -142,6 +148,12 @@ public class faqTest {
       fail("Exception: " + e);
     }
   }
+
+  
+  /**
+   * 
+   * Test for the deleteEntry method.
+   */
 
 
   /**
