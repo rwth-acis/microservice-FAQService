@@ -108,46 +108,89 @@ public class faq extends Service {
   })
   @ApiOperation(value = "listAll", notes = "")
   public HttpResponse listAll() {
+	  
     // listAll
 	boolean listAll_condition = true;
 	ResultSet result;
 	
 	try {
-	String retrieveSQL = "SELECT * FROM faq.entry";
-	PreparedStatement preparedStatement = dbm.getConnection().prepareStatement(retrieveSQL);
-	result = preparedStatement.executeQuery();
+		
+		String retrieveSQL = "SELECT * FROM faq.entry";
+		PreparedStatement preparedStatement = dbm.getConnection().prepareStatement(retrieveSQL);
+		result = preparedStatement.executeQuery();
+		
 	} catch (SQLException e) {
+		
 		e.printStackTrace();
 		listAll_condition = false;
 		result = null;
+		
 	}
 	  
     
-    if(listAll_condition) {
-      JSONArray entryList = new JSONArray();
-      try {
-		  while(result.next()){
-			  	JSONObject entry = new JSONObject();
-			  	entry.put("id", result.getObject("ID"));
-				entry.put(QUESTION_KEY,result.getObject(QUESTION_KEY));
-				entry.put(ANSWER_KEY, result.getObject(ANSWER_KEY));
-				entryList.add(entry);
+    
+    	
+  JSONArray entryList = new JSONArray();
+  try {
+	  while(result.next()){
+		  	JSONObject entry = new JSONObject();
+		  	entry.put("id", result.getObject("ID"));
+			entry.put(QUESTION_KEY,result.getObject(QUESTION_KEY));
+			entry.put(ANSWER_KEY, result.getObject(ANSWER_KEY));
+			entryList.add(entry);
 		  }
-      } catch (SQLException e) {
-			e.printStackTrace();
-	  }
-      
+	} catch (SQLException e) {
+		listAll_condition = false;
+		e.printStackTrace();
+	}
+		  
+	if(listAll_condition) {
       HttpResponse listAll = new HttpResponse(entryList.toJSONString(), HttpURLConnection.HTTP_OK);
       return listAll;
-    }
-    // err
-    boolean err_condition = false;
-    if(err_condition) {
+      
+    } else {
+      // err
       JSONObject errResult = new JSONObject();
       HttpResponse err = new HttpResponse(errResult.toJSONString(), HttpURLConnection.HTTP_INTERNAL_ERROR);
       return err;
     }
-    return null;
+  }
+  
+  /**
+   * getEntry
+   * Get a single entry.
+   * 
+   * @param id
+   * 
+   * @return HttpResponse
+   */
+  @GET
+  @Path("/")
+  @Produces(MediaType.APPLICATION_JSON)
+  @Consumes(MediaType.APPLICATION_JSON)
+  @ApiResponses(value = {
+	       @ApiResponse(code = HttpURLConnection.HTTP_OK, message = "get")
+  })
+  @ApiOperation(value = "getEntry", notes = "")
+  public HttpResponse getEntry(@ContentParam String id) {
+	  JSONObject id_JSON = (JSONObject) JSONValue.parse(id);
+	  
+	  boolean entryGet_conditon = true;
+	  try {
+		  String getSQL = "";
+		  PreparedStatement preparedStatement = dbm.getConnection().prepareStatement(getSQL);
+		  preparedStatement.executeQuery();
+	  } catch (SQLException e) {
+		  e.printStackTrace();
+		  entryGet_conditon = false;
+	  }
+	  
+	  if(entryGet_conditon) {
+		  
+	  }
+	  
+	  return null;
+	  
   }
 
 
