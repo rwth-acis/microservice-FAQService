@@ -1,15 +1,14 @@
 package i5.las2peer.services.faq;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 
-import javax.crypto.SecretKey;
-import javax.crypto.SecretKeyFactory;
-
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -21,16 +20,12 @@ import i5.las2peer.restMapper.RESTMapper;
 import i5.las2peer.restMapper.data.Pair;
 import i5.las2peer.restMapper.tools.ValidationResult;
 import i5.las2peer.restMapper.tools.XMLCheck;
-import i5.las2peer.security.Agent;
 import i5.las2peer.security.ServiceAgent;
 import i5.las2peer.security.UserAgent;
 import i5.las2peer.testing.MockAgentFactory;
 import i5.las2peer.webConnector.WebConnector;
 import i5.las2peer.webConnector.client.ClientResponse;
 import i5.las2peer.webConnector.client.MiniClient;
-import org.json.simple.JSONObject;
-import org.json.simple.JSONValue;
-
 
 /**
  * 
@@ -112,12 +107,23 @@ public class faqTest {
   public void testlistAll() {
     MiniClient c = new MiniClient();
     c.setAddressPort(HTTP_ADDRESS, HTTP_PORT);
+    JSONParser parser = new JSONParser();
+    
     try {
       c.setLogin(Long.toString(testAgent.getId()), testPass);
       @SuppressWarnings("unchecked")
       ClientResponse result = c.sendRequest("GET", mainPath + "/list", "",
         MediaType.TEXT_PLAIN, MediaType.APPLICATION_JSON, new Pair[] {});
+      
+      
+      
+      JSONArray jsonArr = (JSONArray) parser.parse(result.getResponse());
+      
+      // Status: OK
+      assertEquals(200,result.getHttpCode());
       assertTrue(true); // change here
+      
+      
       System.out.println("Result of 'testlistAll': " + result.getResponse().trim());
     } catch (Exception e) {
       e.printStackTrace();
@@ -135,13 +141,19 @@ public class faqTest {
   public void testcreateEntry() {
     MiniClient c = new MiniClient();
     c.setAddressPort(HTTP_ADDRESS, HTTP_PORT);
+    
     try {
       JSONObject entry = new JSONObject();
       c.setLogin(Long.toString(testAgent.getId()), testPass);
-      @SuppressWarnings("unchecked")
-      ClientResponse result = c.sendRequest("POST", mainPath + "/create", entry.toJSONString(),
-        MediaType.APPLICATION_JSON, MediaType.APPLICATION_JSON, new Pair[] {});
+      
+      // Create an entry
+      entry.put(faq.QUESTION_KEY, "Testquestion");
+      entry.put(faq.ANSWER_KEY, "Testanswer");
+      ClientResponse result = c.sendRequest("POST", mainPath + "/create", entry.toJSONString(),MediaType.APPLICATION_JSON, MediaType.APPLICATION_JSON, new Pair[] {});
+      assertEquals(201,result.getHttpCode());
+      
       assertTrue(true); // change here
+      
       System.out.println("Result of 'testcreateEntry': " + result.getResponse().trim());
     } catch (Exception e) {
       e.printStackTrace();

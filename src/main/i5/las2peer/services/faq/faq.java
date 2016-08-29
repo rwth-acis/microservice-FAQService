@@ -63,8 +63,8 @@ import org.json.simple.JSONValue;
             url = "https://github.com/CAE-Community-Application-Editor/microservice-FAQService/blob/master/LICENSE.txt") ) )
 public class faq extends Service {
 
-	private final static String QUESTION_KEY = "question";
-	private final static String ANSWER_KEY = "answer";
+	public final static String QUESTION_KEY = "question";
+	public final static String ANSWER_KEY = "answer";
 
   /*
    * Database configuration
