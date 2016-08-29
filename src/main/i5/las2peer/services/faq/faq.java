@@ -92,11 +92,8 @@ public class faq extends Service {
   /**
    * 
    * listAll
-<<<<<<< HEAD
    * Lists all FAQ entries.
-=======
    * 
->>>>>>> d8a86a9a287eb176bbed6272926b0f9cac934f43
    * 
    * @return HttpResponse
    * 
@@ -202,7 +199,7 @@ public class faq extends Service {
    * deleteEntry
    * Delete a FAQ entry.
    * 
-   * @param a JSONObject containing the id of the entry to be deleted
+   * @param entry a JSONObject containing the id of the entry to be deleted
    * 
    */
   @DELETE
