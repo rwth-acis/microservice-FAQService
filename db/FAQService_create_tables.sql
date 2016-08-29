@@ -7,9 +7,9 @@
 -- Table structure for table entry.
 --
 CREATE TABLE faq.entry (
-  answer VARCHAR(255),
+  answer TEXT,
   ID int NOT NULL AUTO_INCREMENT,
-  question VARCHAR(255),
+  question TEXT,
   CONSTRAINT ID_PK PRIMARY KEY (ID)
 );
 

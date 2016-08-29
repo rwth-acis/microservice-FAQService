@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
+
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -91,7 +92,11 @@ public class faq extends Service {
   /**
    * 
    * listAll
+<<<<<<< HEAD
    * Lists all FAQ entries.
+=======
+   * 
+>>>>>>> d8a86a9a287eb176bbed6272926b0f9cac934f43
    * 
    * @return HttpResponse
    * 
@@ -101,7 +106,8 @@ public class faq extends Service {
   @Produces(MediaType.APPLICATION_JSON)
   @Consumes(MediaType.TEXT_PLAIN)
   @ApiResponses(value = {
-       @ApiResponse(code = HttpURLConnection.HTTP_OK, message = "listAll")
+       @ApiResponse(code = HttpURLConnection.HTTP_OK, message = "listAll"),
+       @ApiResponse(code = HttpURLConnection.HTTP_INTERNAL_ERROR, message = "err")
   })
   @ApiOperation(value = "listAll", notes = "")
   public HttpResponse listAll() {
@@ -137,6 +143,13 @@ public class faq extends Service {
       HttpResponse listAll = new HttpResponse(entryList.toJSONString(), HttpURLConnection.HTTP_OK);
       return listAll;
     }
+    // err
+    boolean err_condition = false;
+    if(err_condition) {
+      JSONObject errResult = new JSONObject();
+      HttpResponse err = new HttpResponse(errResult.toJSONString(), HttpURLConnection.HTTP_INTERNAL_ERROR);
+      return err;
+    }
     return null;
   }
 
@@ -161,13 +174,14 @@ public class faq extends Service {
   @ApiOperation(value = "createEntry", notes = "")
   public HttpResponse createEntry(@ContentParam String entry) {
     JSONObject entry_JSON = (JSONObject) JSONValue.parse(entry);
+    
     boolean entryCreated_condition = true;
     // entryCreated
     try {
     	String insertSQL = "INSERT INTO faq.entry (answer,question) VALUES (?,?)";
     	PreparedStatement preparedStatement = dbm.getConnection().prepareStatement(insertSQL);
-    	preparedStatement.setString(1,entry_JSON.get(QUESTION_KEY).toString());
-    	preparedStatement.setString(2, entry_JSON.get(ANSWER_KEY).toString());
+    	preparedStatement.setString(2,entry_JSON.get(QUESTION_KEY).toString());
+    	preparedStatement.setString(1, entry_JSON.get(ANSWER_KEY).toString());
     	preparedStatement.executeUpdate();
 	} catch (SQLException e) {
 		e.printStackTrace();
@@ -182,6 +196,7 @@ public class faq extends Service {
     }
     return null;
   }
+
 
   /**
    * deleteEntry
@@ -220,7 +235,6 @@ public class faq extends Service {
 	  }
 	  return null;
   }
-  
   // //////////////////////////////////////////////////////////////////////////////////////
   // Methods required by the LAS2peer framework.
   // //////////////////////////////////////////////////////////////////////////////////////
