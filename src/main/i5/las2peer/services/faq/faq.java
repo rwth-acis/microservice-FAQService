@@ -126,8 +126,6 @@ public class faq extends Service {
 		result = null;
 		
 	}
-	  
-    
     
     	
   JSONArray entryList = new JSONArray();
@@ -165,31 +163,43 @@ public class faq extends Service {
    * @return HttpResponse
    */
   @GET
-  @Path("/")
+  @Path("{id}")
   @Produces(MediaType.APPLICATION_JSON)
-  @Consumes(MediaType.APPLICATION_JSON)
   @ApiResponses(value = {
 	       @ApiResponse(code = HttpURLConnection.HTTP_OK, message = "get")
   })
   @ApiOperation(value = "getEntry", notes = "")
-  public HttpResponse getEntry(@ContentParam String id) {
-	  JSONObject id_JSON = (JSONObject) JSONValue.parse(id);
+  public HttpResponse getEntry(@PathParam("id") int id) {
 	  
 	  boolean entryGet_conditon = true;
+	  ResultSet result;
+	  JSONObject res = new JSONObject();
+	  
 	  try {
-		  String getSQL = "";
+		  String getSQL = "SELECT * FROM faq.entry WHERE id=?";
 		  PreparedStatement preparedStatement = dbm.getConnection().prepareStatement(getSQL);
-		  preparedStatement.executeQuery();
+		  preparedStatement.setInt(1, id);
+		  result = preparedStatement.executeQuery();
+		  System.out.println(result.first());
+		  res.put(QUESTION_KEY, result.getObject(QUESTION_KEY));
+		  res.put(ANSWER_KEY, result.getObject(ANSWER_KEY));
+		  
+		  
 	  } catch (SQLException e) {
 		  e.printStackTrace();
 		  entryGet_conditon = false;
 	  }
 	  
 	  if(entryGet_conditon) {
-		  
+		  HttpResponse get = new HttpResponse(res.toJSONString(), HttpURLConnection.HTTP_OK);
+		  return get;
+	  } else {
+	      // err
+	      JSONObject errResult = new JSONObject();
+	      errResult.put("message", "Internal Error!");
+	      HttpResponse err = new HttpResponse(errResult.toJSONString(), HttpURLConnection.HTTP_INTERNAL_ERROR);
+	      return err;
 	  }
-	  
-	  return null;
 	  
   }
 
