@@ -158,7 +158,7 @@ public class faq extends Service {
    * getEntry
    * Get a single entry.
    * 
-   * @param id
+   * @param id The id of the entry you want to retrieve.
    * 
    * @return HttpResponse
    */
@@ -254,6 +254,7 @@ public class faq extends Service {
    * 
    * @param entry a JSONObject containing the id of the entry to be deleted
    * 
+   * @return HttpResponse
    */
   @DELETE
   @Path("/delete")
