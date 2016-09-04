@@ -116,12 +116,8 @@ public class faqTest {
         MediaType.TEXT_PLAIN, MediaType.APPLICATION_JSON, new Pair[] {});
       
       
-      
-      JSONArray jsonArr = (JSONArray) parser.parse(result.getResponse());
-      
       // Status: OK
       assertEquals(200,result.getHttpCode());
-      assertTrue(true); // change here
       
       
       System.out.println("Result of 'testlistAll': " + result.getResponse().trim());
@@ -150,9 +146,9 @@ public class faqTest {
       entry.put(faq.QUESTION_KEY, "Testquestion");
       entry.put(faq.ANSWER_KEY, "Testanswer");
       ClientResponse result = c.sendRequest("POST", mainPath + "/create", entry.toJSONString(),MediaType.APPLICATION_JSON, MediaType.APPLICATION_JSON, new Pair[] {});
-      assertEquals(201,result.getHttpCode());
       
-      assertTrue(true); // change here
+      assertEquals(201,result.getHttpCode());
+      assertTrue(result.getResponse().trim().contains("Success"));
       
       System.out.println("Result of 'testcreateEntry': " + result.getResponse().trim());
     } catch (Exception e) {
@@ -160,12 +156,30 @@ public class faqTest {
       fail("Exception: " + e);
     }
   }
-
   
   /**
+   * Test for the deleteEntry method
    * 
-   * Test for the deleteEntry method.
    */
+  public void testdeleteEntry() {
+	  MiniClient c = new MiniClient();
+	  c.setAddressPort(HTTP_ADDRESS, HTTP_PORT);
+	  
+	  
+	  try {
+		  JSONObject entry = new JSONObject();
+		  c.setLogin(Long.toString(testAgent.getId()), testPass);
+		  
+		  //Create test entry
+		  entry.put(faq.QUESTION_KEY, "Testquestion");
+		  entry.put(faq.ANSWER_KEY, "Testanswer");
+		  ClientResponse result = c.sendRequest("POST", mainPath + "/create", entry.toJSONString(),MediaType.APPLICATION_JSON, MediaType.APPLICATION_JSON, new Pair[] {});
+		  
+	  } catch (Exception e) {
+		  e.printStackTrace();
+		  fail("Exception: " + e);
+	  }
+  }
 
 
   /**

@@ -4,7 +4,7 @@ import java.net.HttpURLConnection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-
+import java.sql.Statement;
 
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -226,13 +226,19 @@ public class faq extends Service {
     JSONObject entry_JSON = (JSONObject) JSONValue.parse(entry);
     
     boolean entryCreated_condition = true;
+    int id = -1;
+    
     // entryCreated
     try {
     	String insertSQL = "INSERT INTO faq.entry (answer,question) VALUES (?,?)";
-    	PreparedStatement preparedStatement = dbm.getConnection().prepareStatement(insertSQL);
+    	PreparedStatement preparedStatement = dbm.getConnection().prepareStatement(insertSQL, Statement.RETURN_GENERATED_KEYS);
     	preparedStatement.setString(2,entry_JSON.get(QUESTION_KEY).toString());
     	preparedStatement.setString(1, entry_JSON.get(ANSWER_KEY).toString());
     	preparedStatement.executeUpdate();
+    	ResultSet rs;
+    	rs = preparedStatement.getGeneratedKeys();
+    	rs.next();
+    	id = rs.getInt(1);
 	} catch (SQLException e) {
 		e.printStackTrace();
 		entryCreated_condition = false;
@@ -240,7 +246,8 @@ public class faq extends Service {
     
     if(entryCreated_condition) {
       JSONObject result = new JSONObject();
-      result.put("Result:", "Sucess");
+      result.put("Result:", "Success");
+      result.put("id", id);
       HttpResponse entryCreated = new HttpResponse(result.toJSONString(), HttpURLConnection.HTTP_CREATED);
       return entryCreated;
     }
