@@ -172,6 +172,7 @@ public class faq extends Service {
   public HttpResponse getEntry(@PathParam("id") int id) {
 	  
 	  boolean entryGet_conditon = true;
+	  boolean errorCondition = false;
 	  ResultSet result;
 	  JSONObject res = new JSONObject();
 	  
@@ -188,15 +189,24 @@ public class faq extends Service {
 	  } catch (SQLException e) {
 		  e.printStackTrace();
 		  entryGet_conditon = false;
+	  } catch (Exception e) {
+		  e.printStackTrace();
+		  errorCondition = true;
 	  }
 	  
 	  if(entryGet_conditon) {
 		  HttpResponse get = new HttpResponse(res.toJSONString(), HttpURLConnection.HTTP_OK);
 		  return get;
-	  } else {
-	      // err
+	  } if(errorCondition) {
+		// err
 	      JSONObject errResult = new JSONObject();
 	      errResult.put("message", "Internal Error!");
+	      HttpResponse err = new HttpResponse(errResult.toJSONString(), HttpURLConnection.HTTP_INTERNAL_ERROR);
+	      return err;
+	  }  else {
+		  // err
+	      JSONObject errResult = new JSONObject();
+	      errResult.put("message", "SQL error, object not found!");
 	      HttpResponse err = new HttpResponse(errResult.toJSONString(), HttpURLConnection.HTTP_INTERNAL_ERROR);
 	      return err;
 	  }
