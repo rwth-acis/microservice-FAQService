@@ -161,6 +161,7 @@ public class faqTest {
    * Test for the deleteEntry method
    * 
    */
+  @Test
   public void testdeleteEntry() {
 	  MiniClient c = new MiniClient();
 	  c.setAddressPort(HTTP_ADDRESS, HTTP_PORT);
@@ -174,7 +175,20 @@ public class faqTest {
 		  entry.put(faq.QUESTION_KEY, "Testquestion");
 		  entry.put(faq.ANSWER_KEY, "Testanswer");
 		  ClientResponse result = c.sendRequest("POST", mainPath + "/create", entry.toJSONString(),MediaType.APPLICATION_JSON, MediaType.APPLICATION_JSON, new Pair[] {});
+		  assertEquals(201,result.getHttpCode());
 		  
+		  //Get id of the new entry
+		  JSONParser parser = new JSONParser();
+		  JSONObject resultJSON = (JSONObject) parser.parse(result.getResponse());
+		  long id = (long) resultJSON.get("id");
+		  
+		  // Try to delete the entry
+		  JSONObject idJSON = new JSONObject();
+		  idJSON.put("id", id);
+		  result = c.sendRequest("DELETE", mainPath + "/delete", idJSON.toJSONString(),MediaType.APPLICATION_JSON, MediaType.APPLICATION_JSON, new Pair[] {});
+		  assertEquals(204,result.getHttpCode());
+		  
+		  System.out.println("Result of 'testdeleteEntry': " + result.getResponse().trim());
 	  } catch (Exception e) {
 		  e.printStackTrace();
 		  fail("Exception: " + e);

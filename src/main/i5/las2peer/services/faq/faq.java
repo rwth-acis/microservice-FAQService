@@ -250,8 +250,13 @@ public class faq extends Service {
       result.put("id", id);
       HttpResponse entryCreated = new HttpResponse(result.toJSONString(), HttpURLConnection.HTTP_CREATED);
       return entryCreated;
-    }
-    return null;
+    }else {
+	      // err
+	      JSONObject errResult = new JSONObject();
+	      errResult.put("message", "Internal Error!");
+	      HttpResponse err = new HttpResponse(errResult.toJSONString(), HttpURLConnection.HTTP_INTERNAL_ERROR);
+	      return err;
+	  }
   }
 
 
@@ -274,6 +279,7 @@ public class faq extends Service {
   public HttpResponse deleteEntry(@ContentParam String entry) {
 	  JSONObject entry_JSON = (JSONObject) JSONValue.parse(entry);
 	  boolean entryDeleted_condition = true;
+	  boolean errorCondition = false;
 	  //entryDeleted
 	  try {
 		  String deleteSQL = "DELETE FROM entry WHERE entry.id=?";
@@ -283,15 +289,27 @@ public class faq extends Service {
 	  } catch(SQLException e) {
 		e.printStackTrace();
 		entryDeleted_condition = false;
+	  } catch (Exception e) {
+		  e.printStackTrace();
+		  errorCondition = true;
 	  }
 	  
 	  if(entryDeleted_condition) {
-		  JSONObject result = new JSONObject();
-		  result.put("Result:", "Success, deleted entry with id: "+entry_JSON.get("id").toString());
-		  HttpResponse entryDeleted = new HttpResponse(result.toJSONString(),HttpURLConnection.HTTP_CREATED);
+		  HttpResponse entryDeleted = new HttpResponse("",HttpURLConnection.HTTP_NO_CONTENT);
 		  return entryDeleted;
+	  } if(errorCondition){
+	      // err
+	      JSONObject errResult = new JSONObject();
+	      errResult.put("message", "Internal Error!");
+	      HttpResponse err = new HttpResponse(errResult.toJSONString(), HttpURLConnection.HTTP_INTERNAL_ERROR);
+	      return err;
+	  } else {
+		// err
+	      JSONObject errResult = new JSONObject();
+	      errResult.put("message", "SQL Error, object not found!");
+	      HttpResponse err = new HttpResponse(errResult.toJSONString(), HttpURLConnection.HTTP_INTERNAL_ERROR);
+	      return err;
 	  }
-	  return null;
   }
   // //////////////////////////////////////////////////////////////////////////////////////
   // Methods required by the LAS2peer framework.
