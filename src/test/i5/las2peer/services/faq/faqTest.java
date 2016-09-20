@@ -3,10 +3,8 @@ package i5.las2peer.services.faq;
 import static org.junit.Assert.*;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.PrintStream;
 
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.junit.AfterClass;
@@ -16,10 +14,7 @@ import org.junit.Test;
 import i5.las2peer.p2p.LocalNode;
 import i5.las2peer.p2p.ServiceNameVersion;
 import i5.las2peer.restMapper.MediaType;
-import i5.las2peer.restMapper.RESTMapper;
 import i5.las2peer.restMapper.data.Pair;
-import i5.las2peer.restMapper.tools.ValidationResult;
-import i5.las2peer.restMapper.tools.XMLCheck;
 import i5.las2peer.security.ServiceAgent;
 import i5.las2peer.security.UserAgent;
 import i5.las2peer.testing.MockAgentFactory;
@@ -85,16 +80,6 @@ public class faqTest {
     connector.start(node);
     Thread.sleep(1000); // wait a second for the connector to become ready
     testAgent = MockAgentFactory.getAdam();
-
-    connector.updateServiceList();
-    // avoid timing errors: wait for the repository manager to get all services before continuing
-    try {
-      System.out.println("waiting..");
-      Thread.sleep(10000);
-    } catch (InterruptedException e) {
-      e.printStackTrace();
-    }
-
   }
 
 
@@ -194,31 +179,6 @@ public class faqTest {
 		  fail("Exception: " + e);
 	  }
   }
-
-
-  /**
-   * 
-   * Test the FAQService for valid rest mapping. Important for development.
-   * 
-   */
-  @Test
-  public void testDebugMapping() {
-    faq cl = new faq();
-    String XML_LOCATION = "./restMapping.xml";
-    String xml = cl.getRESTMapping();
-  
-    try {
-      RESTMapper.writeFile(XML_LOCATION, xml);
-    } catch (IOException e) {
-      e.printStackTrace();
-    }
-    XMLCheck validator = new XMLCheck();
-    ValidationResult result = validator.validate(xml);
-    if (!result.isValid()) {
-      fail();
-    }
-  }
-
 
   /**
    * 

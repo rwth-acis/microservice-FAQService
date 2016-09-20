@@ -21,6 +21,7 @@ import i5.las2peer.api.Service;
 import i5.las2peer.restMapper.HttpResponse;
 import i5.las2peer.restMapper.MediaType;
 import i5.las2peer.restMapper.RESTMapper;
+import i5.las2peer.restMapper.RESTService;
 import i5.las2peer.restMapper.annotations.ContentParam;
 import i5.las2peer.restMapper.annotations.Version;
 import i5.las2peer.services.faq.database.DatabaseManager;
@@ -52,7 +53,6 @@ import org.json.simple.JSONValue;
  * 
  */
 @Path("faq")
-@Version("1.0") // this annotation is used by the XML mapper
 @Api
 @SwaggerDefinition(
     info = @Info(title = "FAQService", version = "1.0",
@@ -61,7 +61,7 @@ import org.json.simple.JSONValue;
         contact = @Contact(name = "Jonas K", email = "CAEAddress@gmail.com") ,
         license = @License(name = "BSD",
             url = "https://github.com/CAE-Community-Application-Editor/microservice-FAQService/blob/master/LICENSE.txt") ) )
-public class faq extends Service {
+public class faq extends RESTService {
 
 	public final static String QUESTION_KEY = "question";
 	public final static String ANSWER_KEY = "answer";
@@ -324,26 +324,6 @@ public class faq extends Service {
   // //////////////////////////////////////////////////////////////////////////////////////
   // Methods required by the LAS2peer framework.
   // //////////////////////////////////////////////////////////////////////////////////////
-
-  
-  /**
-   * 
-   * This method is needed for every RESTful application in LAS2peer. Please don't change.
-   * 
-   * @return the mapping
-   * 
-   */
-  public String getRESTMapping() {
-    String result = "";
-    try {
-      result = RESTMapper.getMethodsAsXML(this.getClass());
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-    return result;
-  }
-
-
   /**
    * 
    * Returns the API documentation of all annotated resources for purposes of Swagger documentation.
