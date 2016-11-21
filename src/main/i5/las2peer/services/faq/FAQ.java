@@ -61,7 +61,7 @@ import org.json.simple.JSONValue;
         contact = @Contact(name = "Jonas K", email = "CAEAddress@gmail.com") ,
         license = @License(name = "BSD",
             url = "https://github.com/CAE-Community-Application-Editor/microservice-FAQService/blob/master/LICENSE.txt") ) )
-public class faq extends RESTService {
+public class FAQ extends RESTService {
 
 	public final static String QUESTION_KEY = "question";
 	public final static String ANSWER_KEY = "answer";
@@ -77,7 +77,7 @@ public class faq extends RESTService {
   private DatabaseManager dbm;
 
 
-  public faq() {
+  public FAQ() {
     // read and set properties values
     setFieldValues();
     // instantiate a database manager to handle database connection pooling and credentials
